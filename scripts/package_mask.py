@@ -35,7 +35,8 @@ def mask_generate(rgb_channel, mask_channel, depth_channel):
             seg.insert(0, 0)
             count += 1
             processed = np.asarray([[[int(seg[i+1]*640), int(seg[i+2]*480)] for i in range(0, len(seg)-1, 2)]])
-            cv2.fillPoly(mask, pts=processed, color=0)
+            if(processed.shape[1] >= 3):
+                cv2.fillPoly(mask, pts=processed, color=0)
 
             break
         rospy.loginfo("Found {} packages".format(count))
@@ -78,6 +79,7 @@ def srv_manager():
     depth = rospy.Publisher('pickup/depth', Image, queue_size=4)
     rospy.init_node('pickup', anonymous=True)
     rate = rospy.Rate(10) # 10hz
+    rospy.loginfo("yolo node on")
     while not rospy.is_shutdown():
         mask_generate(rgb, mask, depth)
         rate.sleep()
